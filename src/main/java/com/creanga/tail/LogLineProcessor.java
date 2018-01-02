@@ -1,17 +1,38 @@
 package com.creanga.tail;
 
+import java.io.PrintStream;
+import java.util.Collections;
+import java.util.List;
+
 public class LogLineProcessor implements LineProcessor{
 
     private StringBuilder message = new StringBuilder();
+    private PrintStream out;
+    private List<String> toExclude = Collections.emptyList();
+
+    public LogLineProcessor(PrintStream out) {
+        this.out = out;
+    }
+
+    public LogLineProcessor(List<String> toExclude,PrintStream out) {
+        this.toExclude = toExclude;
+        this.out = out;
+    }
 
     @Override
-    public void lineRecieved(String line) {
-        if (line.contains("*ERROR*") || line.contains("*WARN*") || line.contains("*INFO*")) {
+    public void lineReceived(String line) {
+        if (line.contains("*ERROR*") || line.contains("*WARN*") || line.contains("*INFO*") || line.contains("*DEBUG*")) {
             if (message.length() > 0) {
                 ErrorMessage errorMessage = parseError(message.toString());
-                System.out.println(errorMessage);
                 boolean ignore = false;
-
+                for (String aFilterOut : toExclude) {
+                    if (errorMessage.thread.contains(aFilterOut)) {
+                        ignore = true;
+                        break;
+                    }
+                }
+                if (!ignore)
+                    out.println(errorMessage);
                 message.setLength(0);
             }
             message.append(line).append(lineSeparator);

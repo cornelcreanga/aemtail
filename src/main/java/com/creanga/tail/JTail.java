@@ -7,6 +7,11 @@ import com.creanga.jsch.JschClient;
 import com.creanga.jsch.SshCommand;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 
 public class JTail {
 
@@ -20,6 +25,10 @@ public class JTail {
         private String password;
         @Parameter(names = {"-u", "--user"}, description = "user", required = true)
         private String user;
+
+        @Parameter(names = {"-e", "--excludeFile"}, description = "exclude file - errors produced by threads matching patterns declared into this file are ignored")
+        private String exclude;
+
 
         @Parameter(names = {"-f", "--folder"}, description = "folder location")
         private String location;
@@ -67,13 +76,18 @@ public class JTail {
         public void setLocation(String location) {
             this.location = location;
         }
+
+        public String getExclude() {
+            return exclude;
+        }
+
+        public void setExclude(String exclude) {
+            this.exclude = exclude;
+        }
     }
 
 
     public static void main(String[] args) throws InterruptedException, IOException {
-
-        LogMessageSshOutputProcessor logMessageSshOutputProcessor = new LogMessageSshOutputProcessor(new LogLineProcessor());
-        Runtime.getRuntime().addShutdownHook(new Thread(logMessageSshOutputProcessor::end));
 
         AemTailParams params = new AemTailParams();
         JCommander jCommander = JCommander.newBuilder()
@@ -91,6 +105,20 @@ public class JTail {
             jCommander.usage();
             System.exit(0);
         }
+        List<String> toExclude = Collections.emptyList();
+        if (params.getExclude()!=null){
+            toExclude = Files.readAllLines(Paths.get(params.getExclude()), Charset.forName("UTF-8"));
+        }else{
+            File f = new File(System.getProperty("user.home"),"jtail.exclude");
+            if (f.exists()) {
+                System.out.printf("using %s for exclusion patterns\n",f.toPath());
+                toExclude = Files.readAllLines(f.toPath(), Charset.forName("UTF-8"));
+            }
+        }
+        LogMessageSshOutputProcessor logMessageSshOutputProcessor = new LogMessageSshOutputProcessor(new LogLineProcessor(toExclude,System.out));
+        Runtime.getRuntime().addShutdownHook(new Thread(logMessageSshOutputProcessor::end));
+
+
         JschClient client = new JschClient(params.getHost(),params.getUser(),params.getPassword());//String host, String username,String password
         SshCommand command = client.createCommand("tail -f /mnt/crx/author/crx-quickstart/logs/error.log");
         client.sshExec(command, System.in, logMessageSshOutputProcessor, System.err);

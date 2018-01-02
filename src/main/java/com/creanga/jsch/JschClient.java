@@ -1,7 +1,6 @@
 package com.creanga.jsch;
 
 
-import com.google.common.io.ByteStreams;
 import com.jcraft.jsch.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -433,6 +432,7 @@ public class JschClient {
                 while ((nRead = in.read(data, 0, data.length)) != -1) {
                     buffer.write(data, 0, nRead);
                     outputProcessor.dataReceived(buffer.toByteArray());
+                    buffer.reset();
                 }
                 outputProcessor.end();
             } catch (IOException e) {

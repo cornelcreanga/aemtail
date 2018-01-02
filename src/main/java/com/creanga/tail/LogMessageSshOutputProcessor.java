@@ -21,7 +21,7 @@ public class LogMessageSshOutputProcessor implements SshOutputProcessor {
         String lastLine = lines[lines.length-1];
         for (int i = 0; i < lines.length-1; i++) {
             String line = lines[i];
-            lineProcessor.lineRecieved(line);
+            lineProcessor.lineReceived(line);
         }
         buffer.delete(0,buffer.length()-lastLine.length());
 
