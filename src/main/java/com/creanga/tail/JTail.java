@@ -88,7 +88,7 @@ public class JTail {
 
 
     public static void main(String[] args) throws InterruptedException, IOException {
-
+        //todo -add connected message
         AemTailParams params = new AemTailParams();
         JCommander jCommander = JCommander.newBuilder()
                 .addObject(params)

@@ -88,7 +88,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.ccreanga.DBToolsApplication</mainClass>
+                            <mainClass>com.creanga.tail.JTail</mainClass>
                         </manifest>
                     </archive>
                     <finalName>${project.artifactId}</finalName>

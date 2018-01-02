@@ -23,16 +23,7 @@ public class LogLineProcessor implements LineProcessor{
     public void lineReceived(String line) {
         if (line.contains("*ERROR*") || line.contains("*WARN*") || line.contains("*INFO*") || line.contains("*DEBUG*")) {
             if (message.length() > 0) {
-                ErrorMessage errorMessage = parseError(message.toString());
-                boolean ignore = false;
-                for (String aFilterOut : toExclude) {
-                    if (errorMessage.thread.contains(aFilterOut)) {
-                        ignore = true;
-                        break;
-                    }
-                }
-                if (!ignore)
-                    out.println(errorMessage);
+                parseAndPrint();
                 message.setLength(0);
             }
             message.append(line).append(lineSeparator);
@@ -43,8 +34,25 @@ public class LogLineProcessor implements LineProcessor{
 
     @Override
     public void end() {
+        try {
+            parseAndPrint();
+        }catch (Exception e){
+            out.println(message.toString());
+        }
+
+    }
+
+    private void parseAndPrint() {
         ErrorMessage errorMessage = parseError(message.toString());
-        System.out.println(errorMessage);
+        boolean ignore = false;
+        for (String aFilterOut : toExclude) {
+            if (errorMessage.thread.contains(aFilterOut)) {
+                ignore = true;
+                break;
+            }
+        }
+        if (!ignore)
+            out.println(errorMessage);
     }
 
     static String lineSeparator = System.getProperty("line.separator");
