@@ -40,7 +40,6 @@ public class JschClient {
     public JschClient(String host, String username, String password) {
         this.host = host;
         this.username = username;
-        this.password = password;
         executor = new CancellingExecutor(64, 64,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<>(),
@@ -382,8 +381,8 @@ public class JschClient {
                     break;//exit for
 
                 } catch (JSchException e) {
-                    if (i > sshCommand.getConnectionRetries()) {
-                        throw new SshClientException("failed to make an ssh connection: " + e.getMessage());
+                    if (recoverable(e) && (i >= sshCommand.getConnectionRetries())) {
+                        return Optional.of(e);
                     }
                     try {
                         logger.info("cannot connect, will sleep " + (sshCommand.getConnectionRetryInterval() * 1000));
@@ -404,6 +403,10 @@ public class JschClient {
             Thread.currentThread().setName(threadName);
             runningCommands.remove(sshCommand);
             return Optional.empty();
+        }
+
+        boolean recoverable(JSchException e){
+            return true;
         }
 
         @Override

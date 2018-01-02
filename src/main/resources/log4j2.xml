@@ -23,6 +23,7 @@
         <!--</Async>-->
     </appenders>
     <loggers>
+        <logger name="com.creanga.jsch.JschClient" level="INFO" />
         <root level="ERROR">
             <appender-ref ref="console" />
             <!--<appender-ref ref="async" />-->
