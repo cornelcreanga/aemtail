@@ -1,4 +1,3 @@
-
 package com.creanga.jsch;
 
 public class SshClientException extends RuntimeException {

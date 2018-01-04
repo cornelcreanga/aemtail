@@ -248,9 +248,11 @@ public class JschClient {
             public void dataReceived(byte[] data) {
                 try {
                     stderr.write(data);
-                } catch (IOException ignored) {}
+                } catch (IOException ignored) {
+                }
 
             }
+
             @Override
             public void end() {
 
@@ -267,8 +269,10 @@ public class JschClient {
             public void dataReceived(byte[] data) {
                 try {
                     stdout.write(data);
-                } catch (IOException ignored) {}
+                } catch (IOException ignored) {
+                }
             }
+
             @Override
             public void end() {
 
@@ -279,9 +283,11 @@ public class JschClient {
             public void dataReceived(byte[] data) {
                 try {
                     stderr.write(data);
-                } catch (IOException ignored) {}
+                } catch (IOException ignored) {
+                }
 
             }
+
             @Override
             public void end() {
 
@@ -336,7 +342,7 @@ public class JschClient {
         @Override
         public Optional<Exception> call() throws Exception {
             final String threadName = Thread.currentThread().getName();
-            Thread.currentThread().setName(threadName+"("+sshCommand.get()+")");
+            Thread.currentThread().setName(threadName + "(" + sshCommand.get() + ")");
             runningCommands.add(sshCommand);
             for (int i = 1; i <= sshCommand.getConnectionRetries(); i++) {
                 if (abort)
@@ -405,7 +411,7 @@ public class JschClient {
             return Optional.empty();
         }
 
-        boolean recoverable(JSchException e){
+        boolean recoverable(JSchException e) {
             return true;
         }
 

@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
 
-public class LogLineProcessor implements LineProcessor{
+public class LogLineProcessor implements LineProcessor {
 
     private StringBuilder message = new StringBuilder();
     private PrintStream out;
@@ -14,7 +14,7 @@ public class LogLineProcessor implements LineProcessor{
         this.out = out;
     }
 
-    public LogLineProcessor(List<String> toExclude,PrintStream out) {
+    public LogLineProcessor(List<String> toExclude, PrintStream out) {
         this.toExclude = toExclude;
         this.out = out;
     }
@@ -23,7 +23,12 @@ public class LogLineProcessor implements LineProcessor{
     public void lineReceived(String line) {
         if (line.contains("*ERROR*") || line.contains("*WARN*") || line.contains("*INFO*") || line.contains("*DEBUG*")) {
             if (message.length() > 0) {
-                parseAndPrint();
+                try {
+                    parseAndPrint();
+                } catch (Exception e) {
+                    out.println(message.toString());
+                }
+
                 message.setLength(0);
             }
             message.append(line).append(lineSeparator);
@@ -36,7 +41,7 @@ public class LogLineProcessor implements LineProcessor{
     public void end() {
         try {
             parseAndPrint();
-        }catch (Exception e){
+        } catch (Exception e) {
             out.println(message.toString());
         }
 
@@ -60,18 +65,18 @@ public class LogLineProcessor implements LineProcessor{
     private static ErrorMessage parseError(String s) {
         ErrorMessage errorMessage = new ErrorMessage();
         int i1 = s.indexOf("*");
-        int i2 = s.indexOf("*", i1+1);
+        int i2 = s.indexOf("*", i1 + 1);
         errorMessage.date = s.substring(0, i1).trim();
         errorMessage.level = Level.valueOf(s.substring(i1 + 1, i2));
-        i1 = s.indexOf("[", i1+1);
-        i2 = s.indexOf("]", i1+1);
+        i1 = s.indexOf("[", i1 + 1);
+        i2 = s.indexOf("]", i1 + 1);
         errorMessage.thread = s.substring(i1 + 1, i2);
-        errorMessage.body = s.substring(i2+1).trim();
+        errorMessage.body = s.substring(i2 + 1).trim();
         return errorMessage;
     }
 
     public enum Level {
-        INFO, ERROR, WARN,DEBUG,FATAL,TRACE;
+        INFO, ERROR, WARN, DEBUG, FATAL, TRACE;
     }
 
     static class ErrorMessage {
@@ -82,7 +87,7 @@ public class LogLineProcessor implements LineProcessor{
 
         @Override
         public String toString() {
-            return date+" *"+level+"* ["+thread+"] "+body;
+            return date + " *" + level + "* [" + thread + "] " + body;
         }
     }
 }

@@ -1,7 +1,5 @@
 package com.creanga.jsch;
 
-import com.jcraft.jsch.Session;
-
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -11,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 public class SshCommand {
 
     private enum State {
-        CREATED, RUNNING,ABORTED,DONE
+        CREATED, RUNNING, ABORTED, DONE
     }
 
     private String command;
@@ -22,7 +20,7 @@ public class SshCommand {
 
     //timeout for channel initiation
     private int channelTimeout = 30;
-    private long timeout=-1;
+    private long timeout = -1;
 
     private State state = State.CREATED;
 
@@ -30,7 +28,7 @@ public class SshCommand {
         this.command = command;
     }
 
-    SshCommand(String command,long timeout) {
+    SshCommand(String command, long timeout) {
         this.command = command;
         this.timeout = timeout;
     }
@@ -55,8 +53,8 @@ public class SshCommand {
         return state;
     }
 
-    public boolean isAborted(){
-        return state==State.ABORTED;
+    public boolean isAborted() {
+        return state == State.ABORTED;
     }
 
     public void abort() throws ExecutionException, InterruptedException {
@@ -64,7 +62,7 @@ public class SshCommand {
     }
 
     public Optional<Exception> await() throws ExecutionException, InterruptedException, TimeoutException {
-        if (timeout>-1)
+        if (timeout > -1)
             return future.get(timeout, TimeUnit.MILLISECONDS);
         return future.get();
     }

@@ -30,7 +30,7 @@ public class SimpleHostKeyRepository implements HostKeyRepository {
 
         return new HostKey[]{hostKey};
     }
-    
+
     public int check(final String host, final byte[] key) {
         String incomingKey = null;
 
@@ -46,17 +46,17 @@ public class SimpleHostKeyRepository implements HostKeyRepository {
 
         return NOT_INCLUDED;
     }
-    
+
     public String getKnownHostsRepositoryID() {
         return null;
     }
-    
+
     public void remove(final String host, final String type, final byte[] key) {
     }
-    
+
     public void remove(final String host, final String type) {
     }
-    
+
     public void add(final HostKey hostkey, final UserInfo ui) {
     }
 }
